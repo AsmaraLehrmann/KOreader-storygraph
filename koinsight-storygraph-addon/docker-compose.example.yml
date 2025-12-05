@@ -1,0 +1,37 @@
+# Add this to your KoInsight docker-compose.yml
+# 
+# This will run the StoryGraph sync service alongside KoInsight
+
+version: '3.8'
+
+services:
+  # Your existing KoInsight service stays here
+  koinsight:
+    image: ghcr.io/georgesg/koinsight:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+
+  # Add this StoryGraph sync service
+  storygraph-sync:
+    build: ./storygraph-sync
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+      - STORYGRAPH_EMAIL=${STORYGRAPH_EMAIL}
+      - STORYGRAPH_PASSWORD=${STORYGRAPH_PASSWORD}
+      - KOINSIGHT_DB_PATH=/app/data/koinsight.db
+    volumes:
+      - ./data:/app/data  # Share KoInsight's data directory
+    depends_on:
+      - koinsight
+
+# Usage:
+# 1. Extract the zip contents to a folder named "storygraph-sync" in your KoInsight directory
+# 2. Add STORYGRAPH_EMAIL and STORYGRAPH_PASSWORD to your .env file
+# 3. Run: docker-compose up -d
+# 4. Test: curl -X POST http://localhost:8081/sync
