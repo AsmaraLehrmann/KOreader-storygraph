@@ -1,3 +1,6 @@
+# WORK IN PROGRESS 
+# NOT READY YET
+
 # StoryGraph Sync
 
 Automatically sync your KOReader reading progress to StoryGraph using Google Cloud Run (free tier).
